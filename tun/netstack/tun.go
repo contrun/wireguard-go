@@ -185,6 +185,10 @@ func convertToFullAddr(endpoint netip.AddrPort) (tcpip.FullAddress, tcpip.Networ
 	}, protoNumber
 }
 
+func (net *Net) NetworkStack() (*stack.Stack, error) {
+	return net.stack, nil
+}
+
 func (net *Net) DialContextTCPAddrPort(ctx context.Context, addr netip.AddrPort) (*gonet.TCPConn, error) {
 	fa, pn := convertToFullAddr(addr)
 	return gonet.DialContextTCP(ctx, net.stack, fa, pn)
