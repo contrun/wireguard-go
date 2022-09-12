@@ -54,7 +54,11 @@ func CreateNetTUN(localAddresses, dnsServers []netip.Addr, mtu int) (tun.Device,
 	opts := stack.Options{
 		NetworkProtocols:   []stack.NetworkProtocolFactory{ipv4.NewProtocol, ipv6.NewProtocol},
 		TransportProtocols: []stack.TransportProtocolFactory{tcp.NewProtocol, udp.NewProtocol, icmp.NewProtocol6, icmp.NewProtocol4},
-		HandleLocal:        true,
+		// I have a use case where HandleLocal is undesirable.
+		// If it is enabled, packet would not be handled normally,
+		// as we will early return here
+		// https://github.com/google/gvisor/blob/31d8668e5178c34343f26020748050a0434419dc/pkg/tcpip/network/ipv4/ipv4.go#L802-L813
+		HandleLocal: false,
 	}
 	dev := &netTun{
 		ep:             channel.New(1024, uint32(mtu), ""),
